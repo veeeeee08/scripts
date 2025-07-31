@@ -1,0 +1,78 @@
+// @ts-check
+/** @typedef {import('driver-lib').Driver} Driver */
+
+export const metadata = {
+  displayName: 'Notion Invite User to Workspace',
+  version: '1',
+};
+
+export const inputsSchema = {
+  type: 'object',
+  properties: {
+    email: {
+      type: 'string',
+      format: 'email',
+      providers: ['read_from_vault']
+    },
+    password: {
+      type: 'string',
+      providers: ['read_from_vault']
+    },
+    inviteEmail: {
+      type: 'string',
+      providers: ['action_input']
+    }
+  },
+  required: ['email', 'password', 'inviteEmail'],
+  additionalProperties: false
+};
+
+/**
+ * @typedef {Object} Inputs
+ * @property {string} email
+ * @property {string} password
+ * @property {string} inviteEmail
+ */
+
+/**
+ * @param {{ driver: Driver, logger: (...args: any[]) => void, inputs: Inputs }} context
+ */
+export default async function main({ driver, logger, inputs }) {
+  logger('🚀 Navigating to Notion login...');
+  await driver.goto('https://www.notion.so/login');
+
+  logger('✏️ Typing email...');
+  await driver.click('xpath=/html/body/div[1]/div/div/div/div/main/section/div/div/div/div[2]/div/div[2]/form/div[1]/input');
+  await driver.type('xpath=/html/body/div[1]/div/div/div/div/main/section/div/div/div/div[2]/div/div[2]/form/div[1]/input', inputs.email);
+
+  logger('➡️ Clicking continue...');
+  await driver.click('xpath=/html/body/div[1]/div/div/div/div/main/section/div/div/div/div[2]/div/div[2]/form/div[4]');
+
+  logger('🔒 Typing password...');
+  await driver.click('xpath=/html/body/div[1]/div/div/div/div/main/section/div/div/div/div[2]/div/div[2]/form/div[2]/input');
+  await driver.type('xpath=/html/body/div[1]/div/div/div/div/main/section/div/div/div/div[2]/div/div[2]/form/div[2]/input', inputs.password);
+
+  logger('🔓 Clicking "Continue with password"...');
+  await driver.click('xpath=/html/body/div[1]/div/div/div/div/main/section/div/div/div/div[2]/div/div[2]/form/div[4]');
+
+  logger('🧭 Navigating to workspace...');
+  await driver.click('xpath=/html/body/div[1]/div/div/div/div/nav/div/div/div/div[4]/div/div/div/div');
+
+  logger('📤 Scrolling and clicking "Invite members"...');
+  await driver.scrollIntoView('xpath=/html/body/div[1]/div/div/div/div[2]/div/div/div[2]/div[2]/div/div/div');
+  await driver.scrollTo('xpath=/html/body/div[1]/div/div/div/div[2]/div/div/div[2]/div[2]/div/div/div');
+  await driver.click('xpath=/html/body/div[1]/div/div/div/div[2]/div/div/div[2]/div[2]/div/div/div[2]');
+
+  logger('✏️ Typing email...');
+  await driver.click('xpath=/html/body/div[1]/div/div/div/div/main/section/div/div/div/div[2]/div/div[2]/form/div[1]/input');
+  await driver.type('xpath=/html/body/div[1]/div/div/div/div/main/section/div/div/div/div[2]/div/div[2]/form/div[1]/input', inputs.email);
+  logger('⏎ Pressing Enter after email...');
+  await driver.press('xpath=/html/body/div[1]/div/div/div/div/main/section/div/div/div/div[2]/div/div[2]/form/div[1]/input', 'Enter');
+
+
+  logger('📨 Clicking "Send invite"...');
+  await driver.click('xpath=/html/body/div[1]/div/div/div/div[2]/div/div/div[2]/div[1]/div/div[3]/div/div');
+
+  logger('✅ Invitation sent.');
+  return { success: true };
+}
