@@ -56,6 +56,10 @@ export default async function main({ driver, logger, inputs }) {
   await driver.waitForSelector('xpath=/html/body/div[2]/div/div/div/div/div/nav/div/div/div[2]/div/div/div/div[2]/div/div[4]/div/button');
   await driver.click('xpath=/html/body/div[2]/div/div/div/div/div/nav/div/div/div[2]/div/div/div/div[2]/div/div[4]/div/button');
 
+  logger('📁 Waiting for "New Team" dropdown item...');
+  await driver.waitForSelector("[data-testid='dropdown-option-New Team']", { timeout: 30000 });
+  await driver.click("[data-testid='dropdown-option-New Team']");
+
   logger('📤 Opening Share dialog...');
   await driver.click('xpath=/html/body/div[2]/div/div/div/div[1]/div/div/div[4]/div/div[2]/div[2]/button');
 
